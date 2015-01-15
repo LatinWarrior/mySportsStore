@@ -17,13 +17,14 @@ angular.module("exampleApp", ["increment", "ngResource", "ui.bootstrap", "angula
         $scope.totalPages = 0;
         $scope.currentPage = 1;
 
-        //$scope.productsResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false}});
+        $scope.productsResource = $resource(baseUrl + ":id", {id: "@id"});
 
-        function getResultsPage(currentPage){
-            var queryParams = '{ pageNumber: ' + currentPage + ', pageSize: ' + $scope.pageSize + '}';
-            console.log(queryParams);
-            var productsResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false, 'params' : {'pageNumber': currentPage, 'pageSize': $scope.pageSize} }});
-            $scope.products =productsResource.query();
+        function getResultsPage(currentPage, pageSize){
+            //var queryParams = '{ pageNumber: ' + currentPage + ', pageSize: ' + $scope.pageSize + '}';
+            //console.log(queryParams);
+            console.log('pageSize: ' + pageSize);
+            var productsSearchResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false, 'params' : {'pageNumber': currentPage, 'pageSize': pageSize} }});
+            $scope.products =productsSearchResource.query();
             $scope.products.$promise.then(function (data){
                 console.dir('products: '+ data.products);
                 console.log('totalCount: ' + data.totalCount);
@@ -33,16 +34,20 @@ angular.module("exampleApp", ["increment", "ngResource", "ui.bootstrap", "angula
                 $scope.currentPage = $scope.currentPage;
                 $scope.products = data.products;
             });
-        };
+        }
 
-        getResultsPage(1);
+        getResultsPage(1, 10);
 
-        $scope.pageChanged = function(currentPage) {
-            getResultsPage(currentPage);
+        $scope.pageChanged = function(currentPage, pageSize) {
+            getResultsPage(currentPage, pageSize);
         };
 
         $scope.pagination = {
             current: 1
+        };
+
+        $scope.listProducts = function(currentPage, pageSize) {
+            getResultsPage(currentPage, pageSize);
         };
 
         //$scope.pageChanged = function(newPage) {
@@ -112,6 +117,7 @@ angular.module("exampleApp", ["increment", "ngResource", "ui.bootstrap", "angula
         //};
 
         $scope.updateProduct = function (product) {
+            console.log('product on updateProduct: ' + product);
             product.$save();
             $scope.displayMode = "list";
         };
@@ -127,6 +133,8 @@ angular.module("exampleApp", ["increment", "ngResource", "ui.bootstrap", "angula
         //};
 
         $scope.editOrCreateProduct = function (product) {
+            console.log('product on editOrCreateProduct: ' + product);
+            console.log('productId on editOrCreateProduct: ' + product.id);
             $scope.currentProduct = product ? product : {};
             $scope.displayMode = "edit";
         };
