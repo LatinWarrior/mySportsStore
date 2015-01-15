@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Sports Store</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap-theme.css"/>
+    <link href="css/toastr.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
+</head>
+<body ng-controller="defaultCtrl">
+<div class="panel panel-primary">
+    <h3 class="panel-heading">Products</h3>
+    <ng-include src="'app/views/tableView.html'" ng-show="displayMode == 'list'"></ng-include>
+    <ng-include src="'app/views/editorView.html'" ng-show="displayMode == 'edit'"></ng-include>
+</div>
+
+
+<script src="js/angular.js"></script>
+<script src="js/angular-resource.js"></script>
+<script src="app/app.js"></script>
+<script src="app/products/products.js"></script>
+<script src="app/products/increment.js"></script>
+</body>
+</html>
