@@ -1,17 +1,45 @@
 /**
  * Created by luis_blanco on 1/13/2015.
  */
-angular.module("exampleApp", ["increment", "ngResource"])
+angular.module("exampleApp", ["increment", "ngResource", "ui.bootstrap", "angularUtils.directives.dirPagination"])
     //.constant("baseUrl", "http://localhost:5500/products/")
     .constant("baseUrl", "http://localhost:51923/api/products/")
+    .config(function(paginationTemplateProvider){
+        paginationTemplateProvider.setPath('app/views/dirPagination.tpl.html');
+    })
     .controller("defaultCtrl", function ($scope, $http, $resource, baseUrl) {
 
         $scope.displayMode = "list";
         $scope.currentProduct = null;
 
-        $scope.totalProducts = 0;
-        $scope.productsPerPage = 25; // this should match however many results your API puts on one page
-        //getResultsPage(1);
+        $scope.totalCount = 0;
+        $scope.pageSize = 10;
+        $scope.totalPages = 0;
+        $scope.currentPage = 1;
+
+        //$scope.productsResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false}});
+
+        function getResultsPage(currentPage){
+            var queryParams = '{ pageNumber: ' + currentPage + ', pageSize: ' + $scope.pageSize + '}';
+            console.log(queryParams);
+            var productsResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false, 'params' : {'pageNumber': currentPage, 'pageSize': $scope.pageSize} }});
+            $scope.products =productsResource.query();
+            $scope.products.$promise.then(function (data){
+                console.dir('products: '+ data.products);
+                console.log('totalCount: ' + data.totalCount);
+                console.log('totalPages:' + data.totalPages);
+                $scope.totalCount = data.totalCount;
+                $scope.totalPages = data.totalPages;
+                $scope.currentPage = $scope.currentPage;
+                $scope.products = data.products;
+            });
+        };
+
+        getResultsPage(1);
+
+        $scope.pageChanged = function(currentPage) {
+            getResultsPage(currentPage);
+        };
 
         $scope.pagination = {
             current: 1
@@ -21,15 +49,19 @@ angular.module("exampleApp", ["increment", "ngResource"])
         //    getResultsPage(newPage);
         //};
 
-        $scope.productsResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false}});
-
-        $scope.listProducts = function(){
-            $scope.products = $scope.productsResource.query({ pageNumber: 1, pageSize: 11});
-            $scope.products.$promise.then(function (data){
-                console.log(data);
-                $scope.products = data.products;
-            });
-        };
+        // This works!
+        //$scope.listProducts = function(){
+        //    $scope.products = $scope.productsResource.query({ pageNumber: 1, pageSize: 11});
+        //    $scope.products.$promise.then(function (data){
+        //        console.log(data.products);
+        //        console.log(data.totalCount);
+        //        console.log(data.totalPages);
+        //        $scope.totalCount = data.totalCount;
+        //        $scope.totalPages = data.totalPages;
+        //        $scope.currentPage = $scope.currentPage;
+        //        $scope.products = data.products;
+        //    });
+        //};
 
         //$scope.listProducts = function(){
         //    $scope.productsResource.query({ pageNumber: 1, pageSize: 11}, function(data){
@@ -126,6 +158,7 @@ angular.module("exampleApp", ["increment", "ngResource"])
         //    $scope.displayMode = "list";
         //};
 
-        $scope.listProducts();
+        // This works!
+        //$scope.listProducts();
 
     });

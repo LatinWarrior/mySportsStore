@@ -20,36 +20,47 @@
                 <button class="btn btn-xs btn-primary" ng-click="editOrCreateProduct(item)">Edit</button>
                 <increment value="item.price"/>
             </td>
+            <pagination boudary-links="true" max-size="5" page="currentPage" items-per-page="pageSize" total-items="totalPages" ng-model="currentPage" ng-change="pageChanged(currentPage)"></pagination>
         </tr>
         </tbody>
     </table>
 
-    <div class="row">
-        <div class="col-xs-4">
-            <h3>Meals Page: {{ currentPage }}</h3>
-        </div>
-        <div class="col-xs-4">
-            <label for="search">Search:</label>
-            <input ng-model="q" id="search" class="form-control" placeholder="Filter text">
-        </div>
-        <div class="col-xs-4">
-            <label for="search">items per page:</label>
-            <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
-        </div>
-    </div>
-    <br>
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <ul>
-                <li dir-paginate="item in products | filter:q | itemsPerPage: pageSize" current-page="currentPage">{{ item }}</li>
-            </ul>
-        </div>
-    </div>
+    <table>
+        <tr dir-paginate="product in products | itemsPerPage: 25" total-items="totalCount">
+            <td>{{product.name}}</td>
+        </tr>
+    </table>
     <div>
-        <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="dirPagination.tpl.html"></dir-pagination-controls>
+        <div class="row">
+            <div class="col-xs-4">
+                <h3>Products Page: {{ currentPage }}</h3>
+            </div>
+            <div class="col-xs-4">
+                <label for="search">Search:</label>
+                <input ng-model="filter" id="search" class="form-control" placeholder="Filter text">
+            </div>
+            <div class="col-xs-4">
+                <label for="search">Products per page:</label>
+                <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
+            </div>
+        </div>
+        <br>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul>
+                    <li dir-paginate="item in products | filter: filter | itemsPerPage: pageSize"
+                        current-page="currentPage">{{ item }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    <div>
+        <dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)"
+                                 template-url="/dirPagination.tpl.html"></dir-pagination-controls>
     </div>
 </div>
 
-    <button class="btn btn-primary" ng-click="listProducts()">Refresh</button>
-    <button class="btn btn-primary" ng-click="editOrCreateProduct()">New</button>
+<button class="btn btn-primary" ng-click="listProducts()">Refresh</button>
+<button class="btn btn-primary" ng-click="editOrCreateProduct()">New</button>
 </div>
