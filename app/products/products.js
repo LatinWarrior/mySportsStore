@@ -2,7 +2,8 @@
  * Created by luis_blanco on 1/13/2015.
  */
 angular.module("exampleApp", ["increment", "ngResource"])
-    .constant("baseUrl", "http://localhost:5500/products/")
+    //.constant("baseUrl", "http://localhost:5500/products/")
+    .constant("baseUrl", "http://localhost:51923/api/products/")
     .controller("defaultCtrl", function ($scope, $http, $resource, baseUrl) {
 
         $scope.displayMode = "list";
@@ -20,11 +21,22 @@ angular.module("exampleApp", ["increment", "ngResource"])
         //    getResultsPage(newPage);
         //};
 
-        $scope.productsResource = $resource(baseUrl + ":id", {id: "@id"});
+        $scope.productsResource = $resource(baseUrl + ":id", {id: "@id"}, {'query': {method: 'GET', isArray: false}});
 
         $scope.listProducts = function(){
-            $scope.products = $scope.productsResource.query();
+            $scope.products = $scope.productsResource.query({ pageNumber: 1, pageSize: 11});
+            $scope.products.$promise.then(function (data){
+                console.log(data);
+                $scope.products = data.products;
+            });
         };
+
+        //$scope.listProducts = function(){
+        //    $scope.productsResource.query({ pageNumber: 1, pageSize: 11}, function(data){
+        //        console.log(data);
+        //        $scope.products = data.products;
+        //    });
+        //};
 
         //$scope.listProducts = function () {
         //    $scope.productsResource.query({ pageNumber: 2, pageSize: 7 }, function (data){
